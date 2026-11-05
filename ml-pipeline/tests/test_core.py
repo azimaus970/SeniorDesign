@@ -45,13 +45,28 @@ def test_compare_variants_sign():
     assert c["mean_diff"] > 0 and c["signflip_p"] == pytest.approx(2 / 64) and c["improvement_claimed"]
 
 
-def test_signflip_wilcoxon_exact():
+def test_signflip_mean_exact():
     # all positive, no zeros: p = 2 / 2^n
-    assert metrics.signflip_wilcoxon(np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])) == pytest.approx(2 / 64)
-    assert metrics.signflip_wilcoxon(np.array([1.0, 2.0, 3.0, 4.0, 5.0])) == pytest.approx(2 / 32)
-    assert metrics.signflip_wilcoxon(np.zeros(4)) == 1.0
-    # symmetric data give p = 1
-    assert metrics.signflip_wilcoxon(np.array([-1.0, 1.0])) == 1.0
+    assert metrics.signflip_mean(np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])) == pytest.approx(2 / 64)
+    assert metrics.signflip_mean(np.array([1.0, 2.0, 3.0, 4.0, 5.0])) == pytest.approx(2 / 32)
+    # zeros drop out: [0, -1, -1, -1, -1, -1] has five effective signs, p = 2/32
+    assert metrics.signflip_mean(np.array([0.0, -1, -1, -1, -1, -1])) == pytest.approx(2 / 32)
+    assert metrics.signflip_mean(np.zeros(4)) == 1.0
+    assert metrics.signflip_mean(np.array([-1.0, 1.0])) == 1.0
+
+
+def test_signflip_mean_follows_the_mean_direction():
+    # many small gains and a few large losses: the mean is harmful (negative), so a
+    # small p here cannot be read as evidence for the beneficial direction
+    d = np.array([1.0] * 16 + [-60.0] * 4)
+    assert d.mean() < 0
+    c_rows = []
+    for i, v in enumerate(d):
+        c_rows += [dict(run_id=f"r{i}", model="m", horizon_s=10, window_s=30, variant="temperature_only", mae_c=1.0 + v),
+                   dict(run_id=f"r{i}", model="m", horizon_s=10, window_s=30, variant="pcm_aware", mae_c=1.0)]
+    import pandas as pd_
+    c = metrics.compare_variants(pd_.DataFrame(c_rows), "m", 10, 30, 500, 0.95, 0)
+    assert c["mean_diff"] < 0 and not c["improvement_claimed"]
 
 
 def test_compare_variants_needs_exact_test_too():

@@ -3,11 +3,13 @@
 Each package folder holds the model file and a metadata.json with: ordered feature
 list, scaler parameters, window length, sampling period, horizon and variant
 (predictors), version string, training run IDs, split-manifest hash, library
-versions, and validation / test metrics. models/model_metadata.json indexes them.
+versions, SHA-256 of every shipped file, and validation / test metrics.
+models/model_metadata.json indexes them.
 """
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import json
 import platform
 from pathlib import Path
@@ -29,6 +31,9 @@ def write_package(models_dir: Path, name: str, meta: dict) -> Path:
     meta = dict(meta)
     meta.setdefault("version", f"{name}-{dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%SZ')}")
     meta["library_versions"] = library_versions()
+    # pin the shipped files: the Pi-side parity check compares these hashes first
+    meta["file_sha256"] = {f.name: hashlib.sha256(f.read_bytes()).hexdigest()
+                           for f in sorted(folder.iterdir()) if f.is_file() and f.name != "metadata.json"}
     (folder / "metadata.json").write_text(json.dumps(meta, indent=2, default=float))
     index_path = Path(models_dir) / "model_metadata.json"
     index = json.loads(index_path.read_text()) if index_path.exists() else {"packages": {}}

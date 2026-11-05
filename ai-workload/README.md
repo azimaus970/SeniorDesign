@@ -65,8 +65,12 @@ There is one row per wall-clock second. Each window ends just after a whole seco
 | `cpu_proc_pct`, `cpu_sys_pct` | Process CPU (100 = one core) and system CPU |
 | `rss_mb`, `mem_used_mb`, `mem_avail_mb` | Process and system memory |
 | `pcm_init` | Initial PCM condition given at start |
+| `request_t_unix` | Time of the request in force: `requested_t_unix` from the control file, or the schedule time |
+| `published_t_unix` | Time taken after this window's QoS was published (QoS file replaced; or just before the CSV row is written when no QoS file is used) |
 
-Missing values are empty, never 0. `merge_logs.py` matches each main-CSV row to the AI window that ended most recently at or before the row time, and less than one control period (1 s) before it, so no AI value from after the row time is ever used. Duplicate window end times are an error, and rows are never matched across runs.
+Missing values are empty, never 0. `merge_logs.py` matches each main-CSV row to the AI row of the same run that was **published** most recently at or before the row time, and less than one control period (1 s) before it, so no AI value that the controller could not yet have read is used. Logs without `published_t_unix` fall back to `t_unix` with a warning. Duplicate publication times are an error, and rows are never matched across runs.
+
+The control file holds the latest desired state, not a queue: a request overwritten before the next 1 s read is never applied, so the controller should log every request it writes. Rejected requests go to the events log. Profile changes take effect only at a window boundary, so no window mixes two profiles; the first window after a change carries the warm-up and has `transition = 1`. The controller should also log the `t_unix` of each QoS window it consumes, so the offline join can be compared with the live decision input.
 
 ## Tests
 

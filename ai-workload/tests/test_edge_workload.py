@@ -103,6 +103,12 @@ def test_schedule_control_file_and_log_format(tmp_path, tmp_profiles):
     assert steady, "no steady reduced_load windows"
     for x in steady:
         assert float(x["inference_fps"]) <= rate * 1.15 + 1
+    # each row is published after its window ends, and names the request in force
+    for x in r:
+        assert float(x["published_t_unix"]) >= float(x["t_unix"])
+        assert x["request_t_unix"] != ""
+    last = [x for x in r if x["workload_profile"] == "reduced_load"][-1]
+    assert abs(float(last["request_t_unix"]) - json.load(open(ctrl))["requested_t_unix"]) < 1e-3
     q = json.load(open(qos))
     assert q["run_id"] == "TEST1" and q["workload_profile"] == "reduced_load"
     meta = json.load(open(tmp_path / "TEST1_meta.json"))

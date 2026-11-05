@@ -1,4 +1,4 @@
-Test record - 2026-11-05T19:42:47Z
+Test record - 2026-11-05T21:07:41Z
 Machine: Model name: Intel(R) Xeon(R) Processor @ 2.30GHz, 4 logical CPUs, Linux 6.18.44-fc-v236 (cloud container, not a Pi)
 Python 3.13.18 numpy 2.5.4 onnxruntime 1.31.1
 Command: python -m pytest -q tests
@@ -6,7 +6,8 @@ PASSED tests/test_core.py::test_manifest_validation
 PASSED tests/test_core.py::test_test_lock
 PASSED tests/test_core.py::test_metrics_and_bootstrap
 PASSED tests/test_core.py::test_compare_variants_sign
-PASSED tests/test_core.py::test_signflip_wilcoxon_exact
+PASSED tests/test_core.py::test_signflip_mean_exact
+PASSED tests/test_core.py::test_signflip_mean_follows_the_mean_direction
 PASSED tests/test_core.py::test_compare_variants_needs_exact_test_too
 PASSED tests/test_core.py::test_cycle_energy_and_reference_z
 PASSED tests/test_core.py::test_rig_loss_refuses_extrapolation
@@ -28,4 +29,4 @@ PASSED tests/test_features.py::test_pcm_aware_needs_offline_z
 PASSED tests/test_features.py::test_sequence_window_shape
 PASSED tests/test_features.py::test_ls_slope
 PASSED tests/test_features.py::test_common_origins_score_every_window_on_the_same_targets
-26 passed, 18 warnings in 11.72s
+27 passed, 18 warnings in 10.63s

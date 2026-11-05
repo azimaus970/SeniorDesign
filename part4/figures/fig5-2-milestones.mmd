@@ -2,19 +2,24 @@
 flowchart TB
     AM0["AM0 Selections<br/>(done)"] --> AM1["AM1 Inference application"]
     PI["Pi 5 and OS image"] --> AM1
+    MNT["Cartridge mounted<br/>on the Pi 5"] --> AM3
     SCH["Table 4.5 schema<br/>and logger"] --> AM2["AM2 Data pipeline"]
-    AM1 --> AM3["AM3 Pilot and training runs"]
+    SD["Stage D calibration<br/>and heater cycles"] --> AM3["AM3 E0 ready"]
     AM2 --> AM3
-    HW["Stages A–C; fan<br/>and cap interfaces"] --> AM3
-    SD["Stage D heater cycles"] --> AM4["AM4 Estimators E0–E2"]
-    AM2 --> AM4
-    AM3 --> AM5["AM5 Predictors,<br/>both variants"]
+    PI --> AM3
+    AM1 --> AM4["AM4 Pilot and training runs"]
+    AM3 --> AM4
+    HW["Stages A–C; fan<br/>and cap interfaces"] --> AM4
+    SD --> AM5["AM5 Estimators E0–E2"]
+    AM3 --> AM5
     AM4 --> AM5
-    AM5 --> AM6["AM6 Deploy and integrate"]
-    CTRL["Controller M1–M4"] --> AM6
-    AM6 --> AM7["AM7 M1–M4 campaign"]
-    AM7 --> AM8["AM8 Analysis and report"]
+    AM4 --> AM6["AM6 Predictors,<br/>both variants"]
+    AM5 --> AM6
+    AM6 --> AM7["AM7 Deploy and integrate"]
+    CTRL["Controller M1–M4"] --> AM7
+    AM7 --> AM8["AM8 M1–M4 campaign"]
+    AM8 --> AM9["AM9 Analysis and report"]
     classDef ext fill:#e6e6e6,stroke:#777777,color:#111111
     classDef ms fill:#ffffff,stroke:#222222,color:#000000
-    class PI,SCH,HW,SD,CTRL ext
-    class AM0,AM1,AM2,AM3,AM4,AM5,AM6,AM7,AM8 ms
+    class PI,MNT,SCH,HW,SD,CTRL ext
+    class AM0,AM1,AM2,AM3,AM4,AM5,AM6,AM7,AM8,AM9 ms

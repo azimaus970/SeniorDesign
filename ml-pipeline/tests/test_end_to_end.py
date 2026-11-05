@@ -86,6 +86,7 @@ def test_full_pipeline(tmp_path):
     for pkg in sel["package"]:
         meta = json.loads((tmp_path / "models" / pkg / "metadata.json").read_text())
         assert meta["split_manifest_sha256"] and meta["feature_list"]
+        assert meta["model_file"] in meta["file_sha256"]
         if "onnx_check" in meta:
             assert meta["onnx_check"]["max_abs_diff_c"] < 1e-4
     e2 = json.loads((tmp_path / "models/estimator_E2/metadata.json").read_text())

@@ -26,7 +26,12 @@ Output files per run (in --out-dir)
   <run_id>_meta.json    run configuration, versions, dataset and model hashes
   <run_id>_summary.json totals at the end
 
-Join to the Table 4.5 CSV on run_id and t_unix (seconds, same Pi clock).
+Join to the Table 4.5 CSV causally on run_id and published_t_unix (seconds, same
+Pi clock): t_unix is the end of the window, published_t_unix the time after the
+row's QoS was published (QoS file replaced, or CSV row about to be written when
+no QoS file is used), so a window counts only from when the controller could read
+it. request_t_unix is the time of the request in force (control-file
+requested_t_unix or schedule time), tying each applied profile to its request.
 Column mapping: workload_profile -> workload_profile, inference_fps ->
 inference_fps, inference_latency_ms -> inference_latency_ms. Accuracy stays
 in the sidecar only. Missing values are written empty, never as 0.
@@ -57,6 +62,7 @@ SIDECAR_FIELDS = [
     "model", "res", "rate_hz", "threads",
     "n_inf", "inference_fps", "inference_latency_ms", "lat_p50_ms", "lat_p95_ms", "lat_max_ms",
     "n_correct", "acc_win", "cpu_proc_pct", "cpu_sys_pct", "rss_mb", "mem_used_mb", "mem_avail_mb", "pcm_init",
+    "request_t_unix", "published_t_unix",
 ]
 
 
@@ -217,6 +223,7 @@ def cmd_run(args):
 
     event("start", start_profile)
     active, requested = None, start_profile
+    request_t = t_start
     changed_t = None
     ctrl_mtime = None
     sched_i = 0
@@ -238,18 +245,21 @@ def cmd_run(args):
             t_rel = win_start - t_start
             while sched_i < len(schedule) and schedule[sched_i]["t"] <= t_rel:
                 requested = schedule[sched_i]["profile"]
+                request_t = t_start + schedule[sched_i]["t"]
                 sched_i += 1
             if args.control and os.path.exists(args.control):
                 m = os.stat(args.control).st_mtime_ns
                 if m != ctrl_mtime:
                     ctrl_mtime = m
                     try:
-                        req = json.load(open(args.control))["profile"]
+                        cj = json.load(open(args.control))
+                        req = cj["profile"]
                         if req not in profiles:
                             raise KeyError(req)
                         if profiles[req].get("needs_rate"):
                             raise ValueError(f"{req} has no measured rate yet")
                         requested = req
+                        request_t = cj.get("requested_t_unix", time.time())
                     except (OSError, ValueError, KeyError, TypeError) as e:
                         event("control_error", f"{type(e).__name__}: {e}")
             transition = 0
@@ -310,14 +320,15 @@ def cmd_run(args):
                 cpu_proc_pct=fmt(proc.cpu_percent(None), 1), cpu_sys_pct=fmt(psutil.cpu_percent(None), 1),
                 rss_mb=fmt(proc.memory_info().rss / 2**20, 1),
                 mem_used_mb=fmt((mem.total - mem.available) / 2**20, 1), mem_avail_mb=fmt(mem.available / 2**20, 1),
-                pcm_init=args.pcm_init,
+                pcm_init=args.pcm_init, request_t_unix=fmt(request_t, 3),
             )
-            w.writerow(row)
-            fcsv.flush()
             if args.qos_file:
                 atomic_write_json(args.qos_file, {k: row[k] for k in (
                     "run_id", "t_unix", "workload_profile", "profile_changed_t_unix", "transition",
-                    "inference_fps", "inference_latency_ms", "lat_p95_ms", "n_inf")})
+                    "inference_fps", "inference_latency_ms", "lat_p95_ms", "n_inf", "request_t_unix")})
+            row["published_t_unix"] = fmt(time.time(), 3)   # taken after publication: never early
+            w.writerow(row)
+            fcsv.flush()
             win_start, win_end = t_end, math.floor(t_end) + 1.0
     finally:
         event("stop", "signal" if _stop else "duration reached")

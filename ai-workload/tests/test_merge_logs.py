@@ -49,3 +49,15 @@ def test_duplicate_window_end_is_an_error(tmp_path):
     p, _ = _run(tmp_path, [["R1", "1970-01-01T00:01:40.200+00:00"]],
                 [["R1", "99.9", "balanced", "1", "1"], ["R1", "99.9", "balanced", "1", "1"]])
     assert p.returncode != 0 and "two AI-log rows" in p.stderr
+
+
+def test_window_published_after_the_row_is_not_used(tmp_path):
+    # window ends at 100.0 (before the row at 100.2) but is published only at 100.3:
+    # the controller could not have read it, so the earlier window is used
+    m, a, o = tmp_path / "main.csv", tmp_path / "ai.csv", tmp_path / "out.csv"
+    _write(m, ["run_id", "timestamp"], [["R1", "1970-01-01T00:01:40.200+00:00"]])
+    _write(a, ["run_id", "t_unix", "published_t_unix", "workload_profile", "inference_fps", "inference_latency_ms"],
+           [["R1", "99.0", "99.3", "balanced", "1", "1"], ["R1", "100.0", "100.3", "high_performance", "2", "2"]])
+    p = subprocess.run([sys.executable, SCRIPT, str(m), str(a), "-o", str(o)], capture_output=True, text=True)
+    assert p.returncode == 0, p.stderr
+    assert list(csv.DictReader(open(o)))[0]["workload_profile"] == "balanced"

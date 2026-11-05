@@ -22,7 +22,7 @@ Phase 4 is not built here. That covers controller integration and the M1–M4 / 
 | Raw T1–T3 never enter the predictor; only `pcm_capacity_est` in the PCM-aware variant | Part III 4.3.3.1 B, 4.3.3.2 | The predictor feature list is fixed in config. The M4 variant adds only the estimator output, applied offline |
 | Learned estimators exclude `soc_temp_c`, `input_power_w` and the E0 output | Part III 4.3.3.1 A | The estimator feature builder has no access to them |
 | Estimator errors in points of z, per test cycle; keep E2 only if it beats E1 by more than the per-cycle spread | Part III 4.3.3.1 A, C | `estimators_cli test` writes the per-cycle table and the rule's outcome |
-| Model packages with feature list, scaler, W, H, variant, version, run IDs, manifest hash, library versions, metrics | Part III 4.3.1.2, 4.3.3.1 C | Each package is a folder plus `metadata.json`, indexed by `models/model_metadata.json` |
+| Model packages with feature list, scaler, W, H, variant, version, run IDs, manifest hash, library versions, metrics | Part III 4.3.1.2, 4.3.3.1 C | Each package is a folder plus `metadata.json` (with `file_sha256`, the SHA-256 of every file in the folder), indexed by `models/model_metadata.json` |
 | Prediction errors are reported per run, then summarized | Part III 4.3.3.1 C | Results go in `results/evaluation_metrics.csv` (one row per run) and the summary files |
 | M3 and M4 use the same model type, primary horizon and window | Part III 4.3.3.2 | `predictors train` picks one window per model for both variants: the one whose best settings give the lowest validation RMSE averaged over the variants; each variant then takes its best setting at that window |
 | Compared errors use the same target instances | Fair comparison across windows and M3/M4 variants | Validation and test scoring keep only the origins eligible for every compared window and variant (`predictors.common_origins`); each setting's own eligible count stays in `coverage.csv` |
@@ -38,7 +38,7 @@ thermalml/
   models/baselines.py  persistence, linear trend
   models/xgb.py        XGBoost predictor
   models/rnn.py        GRU / LSTM predictor, training with early stopping, ONNX export
-  metrics.py           MAE, RMSE, per-run tables, paired bootstrap and exact sign-flip Wilcoxon test for the M3/M4 variants
+  metrics.py           MAE, RMSE, per-run tables, paired bootstrap and exact sign-flip test on the mean difference for the M3/M4 variants
   predictors.py        CLI: train, loro, test
   estimators/calibration.py   calibration package, rig loss, Euse and reference z (Part III 4.2.5 stage D)
   estimators/e0.py            E0 energy balance with endpoint re-anchoring and drift log
@@ -120,7 +120,7 @@ python -m thermalml.bench --run data/runs/<run_id>.csv --packages <package> [<pa
 | `results/validation_summary.csv`, `results/test_summary.csv` | Mean and spread across runs |
 | `results/coverage.csv` | Eligible rows per run, after each filtering step |
 | `results/selection.csv` | Selected setting per model and variant |
-| `results/variant_comparison.csv` | Per-run temperature-only minus PCM-aware error, with the bootstrap interval and the exact sign-flip p; an improvement needs both |
+| `results/variant_comparison.csv` | Per-run temperature-only minus PCM-aware error, with the bootstrap interval and the exact sign-flip p on the mean; an improvement needs the interval above zero and p < 0.05 with the mean above zero |
 | `results/loro_stability.csv` | Leave-one-run-out errors of the selected settings |
 | `results/estimator_validation.csv`, `results/estimator_test.csv`, `results/estimator_E2_vs_E1.json` | Estimator errors per cycle and the E2 rule |
 | `results/e0_drift.csv` | Each E0 re-anchoring and its jump |
