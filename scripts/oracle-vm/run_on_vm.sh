@@ -6,7 +6,7 @@
 set -euo pipefail
 LABEL="Measured on Oracle Cloud Ampere A1 (4 OCPU, 8 GB), not a Pi"
 HERE="$(cd "$(dirname "$0")" && pwd)"
-APP="$HERE/ai-workload"
+APP="$HERE/ai-workload"; [ -d "$APP" ] || APP="$(cd "$HERE/../.." && pwd)/ai-workload"
 OUT="$HERE/a1_results"
 mkdir -p "$OUT"
 exec > >(tee -a "$OUT/console_log.txt") 2>&1
