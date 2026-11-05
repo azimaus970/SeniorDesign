@@ -1,0 +1,106 @@
+# Phase 3 ML pipeline configuration.
+#
+# Rule for this file: every value is either taken from the Part III final report
+# or from Azim's Phase 3 brief (the source is given beside it), or it is left as
+# null for the team to fix from pilot data or a team decision. The pipeline
+# refuses to run a step whose required values are still null; run
+#   python -m thermalml.check_config config/pipeline_config.yaml
+# to list them.
+
+paths:
+  runs_dir: data/runs              # one Table 4.5 CSV per run: <run_id>.csv, AI fields already filled by
+                                   # ai-workload/merge_logs.py
+  run_configs_dir: data/run_configs  # one JSON per run: <run_id>.json (Part III 4.3.2)
+  events_dir: data/events          # optional event logs <run_id>.csv with columns t_unix or elapsed_s, event
+  calibration_dir: calibration     # calibration_NNN.csv + pcm_capacity_reference.csv (Part III 4.3.2)
+  split_manifest: datasets/split_manifest.csv   # Part III 4.3.3.1 B
+  cycle_split_manifest: datasets/cycle_split_manifest.csv   # heater cycles, split one whole cycle at a time (Part III 4.3.3.1 C)
+  models_dir: models
+  results_dir: results
+
+timing:
+  sampling_period_s: 1             # Part III 4.3.1.1: proposed 1 s control period
+
+missing_data:
+  hold_max_periods: 3              # Part III 4.3.3.1 C: last valid value held for up to three periods
+  max_missing_fraction: null       # Part III 4.3.3.1 C: "a set limit" (not yet fixed)
+
+predictor:
+  horizons_s: [10, 20, 30]         # Part III 4.3.3.1 B
+  windows_s: [30, 60, 120]         # Azim's Phase 3 brief (Part III range is 60-120 s)
+  primary_horizon_s: null          # Part III 4.3.3.1 B: fixed after pilot runs
+  target: soc_temp_c               # Part III 4.3.3.1 B
+  # Predictor features, Part III 4.3.3.1 B. Raw T1-T3 are never used (Part III 4.3.3.2).
+  numeric_fields: [soc_temp_c, cpu_usage_pct, cpu_freq_mhz, input_power_w, ambient_temp_c,
+                   fan_command_pct, cpu_freq_limit_mhz]
+  throttle_bits: [0, 1, 2, 3]      # vcgencmd get_throttled current-state bits (Raspberry Pi documentation)
+  workload_profiles: [high_performance, balanced, reduced_load]   # Part III 4.3.3.2 profile names
+  pcm_feature: pcm_capacity_est    # PCM-aware (M4) variant only, Part III 4.3.3.1 B
+  # XGBoost flat-vector features, Part III 4.3.3.1 B
+  lags_s: [5, 10, 30]              # Part III 4.3.3.1 B ("for example at t-5, t-10 and t-30 s")
+  slope_windows_s: null            # Part III: "slopes over short and long windows" - values not fixed
+  # Rows dropped from targets when any of these happen between t and t+H (Part III 4.3.3.2)
+  command_columns: [fan_command_pct, cpu_freq_limit_mhz, workload_profile]
+  drop_on_safety_override: true    # Part III 4.3.3.2
+  event_kinds_that_break_target: null   # team: names in the 'event' column that mark a schedule change,
+                                        # safety intervention or rejected/unknown action (Part III 4.3.3.2)
+
+baselines:
+  persistence: true                # Azim's brief
+  linear_trend_window_s: null      # team: window for the trend baseline; null disables it
+
+xgboost:
+  grid: null                       # Part III 4.3.3.1 B: "a small fixed hyperparameter grid" - values not fixed
+                                   # example form: {max_depth: [...], learning_rate: [...], n_estimators: [...]}
+  early_stopping_rounds: null      # team
+  n_jobs: 1
+
+rnn:                               # GRU and LSTM, Part III 4.3.3.1 B
+  hidden_units_allowed_range: [16, 64]   # Part III: "16-64 hidden units"
+  layers_allowed: [1, 2]           # Part III: "one or two layers"
+  grid: null                       # team: {hidden_units: [...], layers: [...], dropout: [...]}
+  loss: mse                        # Part III 4.3.3.1 B
+  learning_rate: null              # team
+  batch_size: null                 # team
+  max_epochs: null                 # team
+  early_stopping_patience: null    # team (early stopping on validation runs is Part III)
+  seed: null                       # team
+
+evaluation:
+  report_band_above_c: null        # team: optional extra error band (e.g. near the controller thresholds)
+  bootstrap_resamples: null        # team: for the paired M3/M4 predictor-variant interval
+  confidence_level: null           # team
+  seed: null                       # team
+
+estimator:
+  # Learned-estimator features, Part III 4.3.3.1 A. soc_temp_c, input_power_w and the
+  # E0 output are excluded by Part III.
+  pcm_fields: [pcm_t1_c, pcm_t2_c, pcm_t3_c]
+  ambient_field: ambient_temp_c
+  fan_field: fan_command_pct
+  slope_windows_s: null            # Part III: least-squares slopes "over several samples" - not fixed
+  transition_range_c: null         # Part III 4.2.5 / 4.3.3.1 A describe a 55-60 C transition range; set [low, high] once the PCM is selected
+  endpoints:                       # Part III 4.3.3.1 A: margins fixed after PCM selection
+    regenerated_below_c: null      # T1-T3 all below this ...
+    regenerated_hold_s: null       # ... for this long (below-solidus hold)
+    depleted_above_c: null         # T1-T3 all above this
+    depleted_hold_s: null
+  e1:
+    model: xgboost                 # Part III: XGBoost or a regularized linear model ('xgboost' or 'ridge')
+    grid: null                     # team
+    early_stopping_rounds: null    # team (xgboost only; null = no early stopping)
+  e2:
+    cell: gru                      # Part III: GRU or LSTM
+    grid: null                     # team: {hidden_units: [...]}
+    chunk_s: null                  # team: truncated-BPTT chunk length
+    learning_rate: null
+    max_epochs: null
+    early_stopping_patience: null
+    seed: null
+
+runtime_limits:                    # On-Pi overhead check (Part III NFR7: "well within one control period")
+  # Part III 4.3.3.1 C reports the median and 95th-percentile time per call; it does not say
+  # which statistic the pass mark applies to, so that choice is left to the team.
+  limit_statistic: null            # team: p50 or p95
+  max_call_ms: null                # team: pass mark per model call
+  max_combined_ms: 100             # Azim's decision (2026-11-05): estimator + predictor together <= 100 ms

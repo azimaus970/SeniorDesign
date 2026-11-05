@@ -1,0 +1,11 @@
+# Training laptop (offline node, Part III 4.3.1.2). Tested with the versions in README.md.
+numpy
+pandas
+pyyaml
+scikit-learn
+joblib
+xgboost
+torch
+onnx
+onnxruntime
+pytest

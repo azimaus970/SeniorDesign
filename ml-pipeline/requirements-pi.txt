@@ -1,0 +1,7 @@
+# Raspberry Pi 5 (runtime node): only what loading packages and the timing check need.
+numpy
+pandas
+pyyaml
+xgboost
+onnxruntime
+# scikit-learn and joblib only if E1 is the ridge variant

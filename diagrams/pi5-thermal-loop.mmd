@@ -1,0 +1,9 @@
+flowchart LR
+    A[AI inference workload] --> B[Raspberry Pi 5 CPU / accelerator]
+    B --> C[Temperature sensors]
+    C --> D{Thermal controller}
+    D -->|Increase cooling| E[Fan]
+    E --> F[Lower component temperature]
+    F --> C
+    D -->|Temperature limit reached| G[Reduce workload or clock]
+    G --> B

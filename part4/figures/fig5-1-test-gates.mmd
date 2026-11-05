@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "22px", "fontFamily": "Times New Roman"}}}%%
+flowchart TB
+    PI["Pi 5 delivered"] --> A1["A1 Workload profiles"]
+    HW["Table 4.2 checks, stages A–C"] --> A2
+    A1 --> A2["A2 Heat and regeneration<br/>(pilot runs)"]
+    SCH["Table 4.5 schema frozen"] --> B1
+    A2 --> B1["B1 Data pipeline<br/>on pilot logs"]
+    B1 --> RUNS["Training runs"]
+    SD["Stage D heater cycles"] --> C1["C1 Estimators E0–E2"]
+    B1 --> C1
+    RUNS --> C2["C2 Predictors vs baselines"]
+    C1 --> C3["C3 M3 vs M4 variants"]
+    C2 --> C3
+    C3 --> C4["C4 On-Pi overhead"]
+    CTRL["Controller M1–M4 ready"] --> C4
+    C4 --> A3["A3 Full-stack memory"]
+    A3 --> D1["D1 M1–M4 comparison"]
+    classDef ext fill:#e6e6e6,stroke:#777777,color:#111111
+    classDef test fill:#ffffff,stroke:#222222,color:#000000
+    class HW,PI,SCH,SD,CTRL,RUNS ext
+    class A1,A2,A3,B1,C1,C2,C3,C4,D1 test

@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "30px", "fontFamily": "Times New Roman"}}}%%
+flowchart TB
+    AM0["AM0 Selections<br/>(done)"] --> AM1["AM1 Inference application"]
+    PI["Pi 5 and OS image"] --> AM1
+    SCH["Table 4.5 schema<br/>and logger"] --> AM2["AM2 Data pipeline"]
+    AM1 --> AM3["AM3 Pilot and training runs"]
+    AM2 --> AM3
+    HW["Stages A–C; fan<br/>and cap interfaces"] --> AM3
+    SD["Stage D heater cycles"] --> AM4["AM4 Estimators E0–E2"]
+    AM2 --> AM4
+    AM3 --> AM5["AM5 Predictors,<br/>both variants"]
+    AM4 --> AM5
+    AM5 --> AM6["AM6 Deploy and integrate"]
+    CTRL["Controller M1–M4"] --> AM6
+    AM6 --> AM7["AM7 M1–M4 campaign"]
+    AM7 --> AM8["AM8 Analysis and report"]
+    classDef ext fill:#e6e6e6,stroke:#777777,color:#111111
+    classDef ms fill:#ffffff,stroke:#222222,color:#000000
+    class PI,SCH,HW,SD,CTRL ext
+    class AM0,AM1,AM2,AM3,AM4,AM5,AM6,AM7,AM8 ms

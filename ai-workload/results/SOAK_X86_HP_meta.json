@@ -1,0 +1,37 @@
+{
+  "run_id": "SOAK_X86_HP",
+  "start_utc": "2026-11-05T12:08:22.786+00:00",
+  "start_t_unix": 1793880502.787,
+  "pcm_init": "none",
+  "notes": "30-min memory soak on x86 container, not a Pi",
+  "host": "vm",
+  "python": "3.13.18",
+  "onnxruntime": "1.31.1",
+  "numpy": "2.5.4",
+  "model": "mobilenetv3_large",
+  "model_file": "mobilenetv3_large.onnx",
+  "model_sha256": "3cbb3d8600878173b0ac05dc54dbc2f05b5a823c81bf84bbaba3a801f8f80fc7",
+  "threads": 4,
+  "dataset": "/tmp/claude-0/data/imagenette2-320/val",
+  "n_images": 500,
+  "subset_id": "0c6c35c17e08fc5a",
+  "profiles": {
+    "high_performance": {
+      "res": 224,
+      "rate_hz": null
+    },
+    "balanced": {
+      "res": 160,
+      "rate_hz": null
+    },
+    "reduced_load": {
+      "res": 160,
+      "rate_hz": null,
+      "needs_rate": true
+    }
+  },
+  "start_profile": "high_performance",
+  "schedule": [],
+  "control_file": null,
+  "duration_s": 1800.0
+}

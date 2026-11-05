@@ -1,0 +1,58 @@
+{
+  "model": "mobilenetv3_large",
+  "model_sha256": "3cbb3d8600878173b0ac05dc54dbc2f05b5a823c81bf84bbaba3a801f8f80fc7",
+  "subset_id": "0c6c35c17e08fc5a",
+  "n_images": 500,
+  "threads": 4,
+  "host": "vm",
+  "onnxruntime": "1.31.1",
+  "evaluated_utc": "2026-11-05T12:39:05.323+00:00",
+  "profiles": {
+    "high_performance": {
+      "res": 224,
+      "rate_hz": null,
+      "top1": 0.824,
+      "top5": 0.98,
+      "deterministic": true,
+      "prediction_hashes": [
+        "6583a2c76badca1f",
+        "6583a2c76badca1f"
+      ],
+      "latency_p50_ms": 10.65,
+      "latency_p95_ms": 15.4,
+      "max_back_to_back_fps": 91.7,
+      "top1_drop_vs_high_performance_pts": 0.0
+    },
+    "balanced": {
+      "res": 160,
+      "rate_hz": null,
+      "top1": 0.75,
+      "top5": 0.938,
+      "deterministic": true,
+      "prediction_hashes": [
+        "6aaab04590ee3032",
+        "6aaab04590ee3032"
+      ],
+      "latency_p50_ms": 7.36,
+      "latency_p95_ms": 9.54,
+      "max_back_to_back_fps": 133.2,
+      "top1_drop_vs_high_performance_pts": 7.4
+    },
+    "reduced_load": {
+      "res": 160,
+      "rate_hz": null,
+      "top1": 0.75,
+      "top5": 0.938,
+      "deterministic": true,
+      "prediction_hashes": [
+        "6aaab04590ee3032",
+        "6aaab04590ee3032"
+      ],
+      "latency_p50_ms": 7.68,
+      "latency_p95_ms": 10.19,
+      "max_back_to_back_fps": 128.0,
+      "top1_drop_vs_high_performance_pts": 7.4
+    }
+  },
+  "machine": "x86 Linux VM, Intel Xeon 2.8 GHz, 4 cores (NOT a Raspberry Pi 5)"
+}

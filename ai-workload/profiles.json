@@ -1,0 +1,21 @@
+{
+  "_comment": "Workload profiles (Part III Section 4.3.3.2, Part IV 5.2.4.1). Only resolution and inference rate change; model and threads are fixed. rate_hz null = back-to-back. reduced_load has NO rate yet: it must be measured on the Pi 5 with 'edge_workload.py calibrate --fraction F --write', where F is the team's agreed fraction of balanced FPS. The workload refuses to run reduced_load until then.",
+  "model": "mobilenetv3_large",
+  "threads": 4,
+  "default_profile": "high_performance",
+  "profiles": {
+    "high_performance": {
+      "res": 224,
+      "rate_hz": null
+    },
+    "balanced": {
+      "res": 160,
+      "rate_hz": null
+    },
+    "reduced_load": {
+      "res": 160,
+      "rate_hz": null,
+      "needs_rate": true
+    }
+  }
+}

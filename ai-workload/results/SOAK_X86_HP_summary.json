@@ -1,0 +1,9 @@
+{
+  "run_id": "SOAK_X86_HP",
+  "duration_s": 1800.2,
+  "inferences": 160502,
+  "top1": 0.824,
+  "top5": 0.98,
+  "prediction_sha256": "34a5d8ec5209ece4",
+  "peak_rss_mb": 247.2
+}

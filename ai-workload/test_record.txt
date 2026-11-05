@@ -1,0 +1,12 @@
+Test record - 2026-11-05T19:24:05Z
+Machine: Model name: Intel(R) Xeon(R) Processor @ 2.30GHz, 4 logical CPUs, Linux 6.18.44-fc-v236 (cloud container, not a Pi)
+Python 3.13.18 numpy 2.5.4 onnxruntime 1.31.1
+Command: DATA=<imagenette2-320/val> python -m pytest -q tests
+PASSED tests/test_edge_workload.py::test_reduced_load_refused_until_calibrated
+PASSED tests/test_edge_workload.py::test_schedule_control_file_and_log_format
+PASSED tests/test_edge_workload.py::test_eval_is_deterministic
+PASSED tests/test_edge_workload.py::test_duplicate_run_id_refused
+PASSED tests/test_merge_logs.py::test_never_uses_a_window_that_ends_after_the_row
+PASSED tests/test_merge_logs.py::test_stale_window_and_other_run_are_not_used
+PASSED tests/test_merge_logs.py::test_duplicate_window_end_is_an_error
+7 passed in 39.48s

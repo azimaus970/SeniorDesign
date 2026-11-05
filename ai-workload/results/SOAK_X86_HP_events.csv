@@ -1,0 +1,4 @@
+run_id,utc,t_unix,event,detail
+SOAK_X86_HP,2026-11-05T12:08:22.787+00:00,1793880502.788,start,high_performance
+SOAK_X86_HP,2026-11-05T12:08:22.788+00:00,1793880502.788,profile_change,None -> high_performance
+SOAK_X86_HP,2026-11-05T12:38:23.004+00:00,1793882303.005,stop,duration reached

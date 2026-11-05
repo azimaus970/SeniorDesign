@@ -1,0 +1,29 @@
+# Second reviewer checklist (S01–S19): what was accepted, what was not
+
+Same approach as the first review: each point was checked against Part III, the code and the measured results. **Accepted** means it was correct and is now in the doc (or the code). **Partly** means the correct part was done and the rest rejected, with the reason. Nothing below adds a number that the team has not measured or decided.
+
+| # | Verdict | What changed, or why not |
+|---|---|---|
+| S01 | Accepted | The same number of pairs is planned at each setpoint, so the pooled mean weights the setpoints equally. The bootstrap now resamples whole pairs within each setpoint. Percentile intervals can be too narrow with few pairs, so the confirmatory verdict now needs the interval **and** the exact sign-flip test (p < 0.05) to agree. A result from few pairs is described as such. |
+| S02 | Accepted | The paired metrics are now stated as performance given that both runs completed. A failure-aware companion uses every attempted pair: a run that failed counts as the worse member, two failures tie, and the result is a sign count. No value is invented for an unfinished run. |
+| S03 | Accepted | The attempt budget and stopping rule are recorded before D1. Too few complete pairs means D1 is reported as not met. Extra attempts only follow a rule recorded in advance, are reported separately and never replace a failure. D1 row in Table 5.1 updated. |
+| S04 | **Accepted: my own wording was wrong** | The doc said that if T1–T3 "stop progressing", a longer phase cannot help. A flat temperature in the transition range is latent melting, not a stall. Depletion is now judged with the calibrated endpoint criteria plus the E0 energy balance (with its calibration uncertainty). Fixed in A2 text and in Risks. |
+| S05 | Partly | Done: the doc cites Part III 4.3.3.2 (z is used only in the M4 anticipatory rule; protections use measured temperatures), C1 reports estimator error near z_low once z_low is fixed, and the M4 claim is limited to "with the selected estimator". **Rejected:** a numeric z accuracy threshold. It would be a made-up number, and it is not needed for safety because z cannot switch off a protection. |
+| S06 | Accepted | The endpoint-reset E2 variant is now a research comparison only. The deployed E2 resets only at run start, as Part III says. |
+| S07 | Accepted | Warnings are now defined exactly: event = soc_temp_c(t+H) ≥ T_warn; warning = predicted temperature for t+H ≥ T_warn. All four counts (correct warnings, misses, false alarms, correct non-warnings) are reported with denominators on the common origins. C2 row updated. |
+| S08 | Accepted (see note) | If C2 fails: report it, no retuning on test runs, D1 still runs with the frozen selection and the C2 failure is stated as a limitation. Any revised predictor is only judged on runs recorded after the revision. Confirmed by Azim. |
+| S09 | Accepted | The confirmatory claim is now "better on time above T_warn". "Better overall" additionally needs the QoS violation time and delivered accuracy intervals not to lie entirely on the harmful side. |
+| S10 | Accepted | Reworded: predictor validation and test runs take no part in fitting or selecting the estimator; on those runs it only produces z causally, as on the Pi; reference z is never a predictor input. |
+| S11 | Accepted | C4 is repeated at the lowest permitted frequency cap with the workload running at the hottest setpoint, recording the actual CPU frequency. The 100 ms limit must hold in both conditions. |
+| S12 | Accepted | A3 now records per-process peak memory (VmHWM), which covers start-up, model load, first inference and profile changes. The system-wide figure is called what it is: the highest sampled value per control period. |
+| S13 | Accepted | "One thread per core" was not what the code does. Now "four intra-op threads, no CPU affinity set" (A1 row and Workload profiles). |
+| S14 | Accepted | EfficientNet-B0 is "slower in the reported pass", not a stable advantage (FPS varied up to 21% between passes). |
+| S15 | **Accepted: code changed** | The AI log now writes an integer `n_correct` per second, so delivered accuracy is Σ n_correct ÷ Σ n_inf with no rounding. Test updated; 7 tests pass (`ai-workload/test_record.txt`). |
+| S16 | Partly | Done: the doc gives the exact locations (`ai-workload/benchmark/`, `ml-pipeline/`, both `test_record.txt` files) and the benchmark command. **Rejected:** "commit to the repository". There is no git repository in the project yet; setting one up is a team action, already listed under Resources as version control. |
+| S17 | Accepted | Renamed to "phase-relative response delay" with an action indicator. A phase with no action has no delay value; it is never recorded as zero. |
+| S18 | Accepted | Checked against the arXiv abstract (not downloaded). Shanks et al. proved the estimates stay bounded and demonstrated it in simulation and on test-bed data. The doc no longer says they "showed experimentally" that SOC is tracked with bounded error, and says it is not evidence for this rig. |
+| S19 | Accepted | Both figures now have alt text that describes the diagram. Table 5.4 is kept on one page. Table 5.1 rows may now break across pages (its rows are long, and keeping them whole left half-empty pages); its header repeats on every page. Pagination checked on all 22 pages. |
+
+## Decided by Azim (2026-11-05)
+- S08 branch: as recommended. A C2 failure is reported, the model is not retuned on test runs, and D1 runs with the frozen model, with the failure stated as a limitation.
+- Useful difference for time above T_warn: no minimum size. Any reduction counts if its 95% interval lies entirely on the beneficial side and the exact sign-flip test gives p < 0.05. The doc no longer lists this as a value still to be fixed.

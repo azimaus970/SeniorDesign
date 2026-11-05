@@ -1,0 +1,29 @@
+{
+  "model": "mobilenetv3_large",
+  "file": "mobilenetv3_large.onnx",
+  "sha256": "3cbb3d8600878173b0ac05dc54dbc2f05b5a823c81bf84bbaba3a801f8f80fc7",
+  "size_mb": 21.98,
+  "params_m": 5.51,
+  "input": "float32 NHWC RGB 0-255, dynamic H/W",
+  "output": "1000 ImageNet probabilities",
+  "exported_utc": "2026-11-05T12:05:30+00:00",
+  "tensorflow": "2.21.0",
+  "tf2onnx": "1.17.0",
+  "onnxruntime": "1.31.1",
+  "opset": 17,
+  "verification": {
+    "n_images": 50,
+    "tol": 0.001,
+    "passed": true,
+    "per_resolution": {
+      "224": {
+        "max_abs_diff": 3.2186508178710938e-06,
+        "top1_agreement": 1.0
+      },
+      "160": {
+        "max_abs_diff": 3.2186508178710938e-06,
+        "top1_agreement": 1.0
+      }
+    }
+  }
+}
