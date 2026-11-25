@@ -13,7 +13,7 @@ All numbers in `results/` were measured on an x86 Linux machine, **not on a Rasp
 | `dataset.py` | The fixed image subset (first 50 files per class, fixed order) and the preprocessing, shared by the laptop and the Pi. |
 | `profiles.json` | The three Part III profiles. Only resolution and inference rate change. |
 | `edge_workload.py` | The workload: `run`, `eval`, `calibrate` and `set-profile`. |
-| `merge_logs.py` | Offline. Fills `workload_profile`, `inference_fps` and `inference_latency_ms` in the Table 4.5 CSV from the AI log. |
+| `merge_logs.py` | Offline. Fills `workload_profile`, `inference_fps` and `inference_latency_ms` in the Table 4.4 CSV from the AI log. |
 | `tests/` | Functional tests on the real model and images. |
 
 ## Setup on the Pi 5
@@ -58,7 +58,7 @@ There is one row per wall-clock second. Each window ends just after a whole seco
 | `transition` | 1 in the window that contains a change and its warm-up |
 | `model`, `res`, `rate_hz`, `threads` | Settings; empty `rate_hz` means back-to-back, with no cap |
 | `n_inf`, `inference_fps` | Inferences completed and rate in this window |
-| `inference_latency_ms` | Mean latency (maps to Table 4.5) |
+| `inference_latency_ms` | Mean latency (maps to Table 4.4) |
 | `lat_p50_ms`, `lat_p95_ms`, `lat_max_ms` | Latency distribution |
 | `n_correct` | Integer count of correct top-1 predictions among the `n_inf` completed in this window; delivered accuracy over a run is the sum of `n_correct` divided by the sum of `n_inf` |
 | `acc_win` | Top-1 accuracy in this window, for checking only; the official accuracy is the offline `eval` result |

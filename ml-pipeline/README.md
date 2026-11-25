@@ -32,7 +32,7 @@ Phase 4 is not built here. That covers controller integration and the M1–M4 / 
 ```
 config/pipeline_config.yaml   all settings, with sources; nulls = team decisions still open
 thermalml/
-  io.py                Table 4.5 loader, run configs, event logs, throttle-bit split
+  io.py                Table 4.4 loader, run configs, event logs, throttle-bit split
   splits.py            split manifest checks, manifest hash, leave-one-run-out folds, test lock
   features.py          grid, hold rule, targets, eligibility, flat features, W x F windows
   models/baselines.py  persistence, linear trend
@@ -55,7 +55,7 @@ tests/                 logic tests and one end-to-end test on throwaway files
 
 | Input | Path | Format | Who provides it |
 | --- | --- | --- | --- |
-| Run logs | `data/runs/<run_id>.csv` | Part III Table 4.5. AI fields are filled by `ai-workload/merge_logs.py` | Mazen's logger plus the AI sidecar |
+| Run logs | `data/runs/<run_id>.csv` | Part III Table 4.4. AI fields are filled by `ai-workload/merge_logs.py` | Mazen's logger plus the AI sidecar |
 | Run configurations | `data/run_configs/<run_id>.json` | Keys: run_id, control_mode, chamber_setpoint_c, sampling_period_s, initial_pcm_state, cartridge_id, workload_config, schedule_id (Part III 4.3.2) | Whoever runs the experiment |
 | Event logs (optional) | `data/events/<run_id>.csv` | Columns `event` and either `elapsed_s` or `t_unix` | RunLogger.log_event |
 | Split manifest | `datasets/split_manifest.csv` | run_id, split (train / validation / test), plus mode, setpoint, schedule, initial state, cartridge | Team decision |

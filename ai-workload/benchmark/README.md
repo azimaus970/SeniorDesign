@@ -1,4 +1,4 @@
-# Candidate-model benchmark (Part IV Table 5.3)
+# Candidate-model benchmark (SDP report Table 5.1)
 
 Measured on a Linux cloud machine (Intel Xeon @ 2.30 GHz, 4 logical CPUs), not a Raspberry Pi.
 
@@ -6,7 +6,7 @@ Measured on a Linux cloud machine (Intel Xeon @ 2.30 GHz, 4 logical CPUs), not a
   checks the ONNX file against Keras on the first 50 subset images, then (in a fresh process holding only ONNX
   Runtime, NumPy and the cached images) counts top-1 and top-5 correct over the fixed 500-image Imagenette
   subset (`dataset.py`, 50 per class) and times batch-1 inference with 4 threads after 10 untimed warm-ups.
-- `benchmark_results.json` is the run used in Table 5.3 (all five models). It records the machine, software
+- `benchmark_results.json` is the run used in Table 5.1 (all five models). It records the machine, software
   versions, subset id, ONNX hashes, correct counts, FPS, latency p50/p95 and peak resident memory (VmHWM).
 - `benchmark_results_first_pass.json` is an earlier full pass of the same script on the same machine without
   EfficientNet-B0. Correct counts are identical; speeds differ, which shows the run-to-run variation.
